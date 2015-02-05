@@ -35,6 +35,12 @@ Updating Workday:
 $ doing --ping
 ```
 
+List Tags (used by tab completion script):
+
+``` sh
+$ doing --tags
+```
+
 ## How
 
 * A single entry is called a `Record`.
@@ -49,6 +55,7 @@ A simple file structure.
 ```
 doing/
   tags
+  lock
   records/
     <year>/
       <month>/
@@ -57,6 +64,7 @@ doing/
 
 The `tags` file will be a text file with each tag on its own line.
 The `workday` files will be json with the following format.
+The `lock` file is a global pid lockfile.
 
 ``` json
 {
