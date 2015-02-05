@@ -10,6 +10,8 @@
 * Treats words prefixed with `@` as tags.
 * Tab completes existing tags.
 
+![](./records.png)
+
 ## UI
 
 Entering Records:
