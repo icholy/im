@@ -38,6 +38,34 @@ $ doing --ping
 * A single entry is called a `Record`.
 * A startup and shutdown cycle is called a `Workday`.
 * A cron job periodically calls `doing --ping` to update the `Workday`.
-* Storage will be implemented using git.
+* Storage will be implemented using flat files.
 
+## Storage
 
+A simple file structure.
+
+```
+doing/
+  tags
+  records/
+    <year>/
+      <month>/
+        <workday>
+```
+
+The `tags` file will be a text file with each tag on its own line.
+The `workday` files will be json with the following format.
+
+``` json
+{
+  "start": "2015-02-05T10:01:50-05:00",
+  "end": "2015-02-05T10:01:50-05:00",
+  "records": [
+    {
+      "time": "2015-02-05T10:01:50-05:00",
+      "description": "<description>",
+      "tags": ["<tag>", "<tag>"]
+    }
+  ]
+}
+```
