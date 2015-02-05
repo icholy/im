@@ -1,6 +1,6 @@
-# Doing (WIP)
+# IM (WIP)
 
-> An tool for keeping track of what I've been doing
+> An tool for keeping track of what I'm doing
 
 ## What
 
@@ -17,35 +17,35 @@
 Entering Records:
 
 ``` sh
-$ doing <description>
-$ doing @app refactoring Foo controller
-$ doing listening to @dubstep on @youtube
-$ doing nothing
+$ im <description>
+$ im refactoring Foo controller in @app
+$ im listening to @dubstep on @youtube
+$ im slacking
 ```
 
 Starting Web Interface:
 
 ``` sh
-$ doing --web
+$ im --web
 ```
 
 Updating Workday:
 
 ``` sh
-$ doing --ping
+$ im --ping
 ```
 
 List Tags (used by tab completion script):
 
 ``` sh
-$ doing --tags
+$ im --tags
 ```
 
 ## How
 
 * A single entry is called a `Record`.
 * A startup and shutdown cycle is called a `Workday`.
-* A cron job periodically calls `doing --ping` to update the `Workday`.
+* A cron job periodically calls `im --ping` to update the `Workday`.
 * Storage will be implemented using flat files.
 
 ## Storage
@@ -53,7 +53,7 @@ $ doing --tags
 A simple file structure.
 
 ```
-doing/
+im/
   tags
   lock
   records/
@@ -78,4 +78,15 @@ doing/
     }
   ]
 }
+```
+
+## Stop Gap
+
+This is what I'm using for now
+
+```sh
+im () {
+  echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ"): $@" >> ~/.im_records
+}
+
 ```
