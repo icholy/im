@@ -12,6 +12,8 @@
 
 ## UI
 
+Entering Records:
+
 ``` sh
 $ doing <description>
 $ doing @app refactoring Foo controller
@@ -19,12 +21,23 @@ $ doing listening to @dubstep on @youtube
 $ doing nothing
 ```
 
+Starting Web Interface:
+
+``` sh
+$ doing --web
+```
+
+Updating Workday:
+
+``` sh
+$ doing --ping
+```
+
 ## How
 
 * A single entry is called a `Record`.
-* A daemon runs in the backround and monitors system uptime.
-* The daemon exposes a rest interface to manage records.
 * A startup and shutdown cycle is called a `Workday`.
-* Not sure how storage is going to be implemented.
+* A cron job periodically calls `doing --ping` to update the `Workday`.
+* Storage will be implemented using git.
 
 
