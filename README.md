@@ -82,11 +82,5 @@ im/
 
 ## Stop Gap
 
-This is what I'm using for now
-
-```sh
-im () {
-  echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ"): $@" >> ~/.im_records
-}
-
-```
+I need to start using something right now so I wrote a shell script that writes records to a log file.
+This will let me test out different interface ideas before writing the real thing.
