@@ -62,9 +62,9 @@ doing/
         <workday>
 ```
 
-The `tags` file will be a text file with each tag on its own line.
-The `workday` files will be json with the following format.
-The `lock` file is a global pid lockfile.
+* `tags` file will be a text file with each tag on its own line.
+* `workday` files will be json with the following format.
+* `lock` file is a global pid lockfile.
 
 ``` json
 {
