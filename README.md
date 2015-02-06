@@ -2,6 +2,14 @@
 
 > An tool for keeping track of what I'm doing
 
+## Todo
+
+- [x] Basic Day & Task storage with tags
+- [x] Update date with ping
+- [x] Global locking on data directory
+- [ ] Query interface
+- [ ] Web based calendar view
+
 ## Ping
 
 ``` sh
