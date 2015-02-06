@@ -8,8 +8,11 @@ import (
 	"time"
 )
 
+// DataDir is where the root directory
+// where the data is stored
 var DataDir = "data"
 
+// Day is a single workday
 type Day struct {
 	Start time.Time
 	End   time.Time
