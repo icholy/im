@@ -51,10 +51,7 @@ func LockDataDir() error {
 	if err != nil {
 		return err
 	}
-	if err := tryLockFor(lfile, time.Second); err != nil {
-		return err
-	}
-	return nil
+	return tryLockFor(lfile, time.Second)
 }
 
 func UnlockDataDir() error {
