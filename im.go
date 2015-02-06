@@ -25,21 +25,20 @@ func main() {
 
 	flag.Parse()
 
+	if isPing {
+		if err := workday.Ping(); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	args := flag.Args()
 	if len(args) == 0 {
 		flag.Usage()
 		return
 	}
-
-	if isPing {
-		if err := workday.Ping(); err != nil {
-			log.Fatal(err)
-		}
-	} else {
-
-		desc := strings.Join(args, " ")
-		if err := workday.AddTask(desc); err != nil {
-			log.Fatal(err)
-		}
+	desc := strings.Join(args, " ")
+	if err := workday.AddTask(desc); err != nil {
+		log.Fatal(err)
 	}
 }
