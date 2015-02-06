@@ -34,7 +34,6 @@ func main() {
 
 	if isPing {
 		// update the Day
-		time.Sleep(time.Minute)
 		if err := workday.Ping(); err != nil {
 			log.Fatal(err)
 		}
