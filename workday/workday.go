@@ -76,7 +76,7 @@ func (d *Day) MustBeSane() {
 		panic("days do not match")
 	}
 	if d.End.Before(d.Start) {
-		panic("day starts before it ends")
+		panic("day ends before it starts")
 	}
 }
 
