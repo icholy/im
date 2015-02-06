@@ -84,6 +84,7 @@ func pathForTime(t time.Time) string {
 	year, month, day := t.Date()
 	return filepath.Join(
 		DataDir,
+		"tasks",
 		strconv.Itoa(year),
 		month.String(),
 		strconv.Itoa(day)+".json",
