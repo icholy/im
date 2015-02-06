@@ -1,8 +1,8 @@
 #!/bin/bash
 
-_RECORD_FILE=~/.im_records
-_RECORD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-_RECORD_DESC="$@"
+_FILE=~/.im_records
+_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+_DESC="$@"
 
 usage () {
   echo "IM: Tracks what I'm doing"
@@ -34,11 +34,11 @@ fi
 while getopts "g:tsdh" opt; do
     case "$opt" in
     t)  # list all tags
-        cat "$_RECORD_FILE" | grep -oh '@\w*' | cut -d@ -f2 | sort -u
+        cat "$_FILE" | grep -oh '@\w*' | cut -d@ -f2 | sort -u
         exit 0
         ;;
     g)  # grep by tag
-        cat "$_RECORD_FILE" | grep "@${OPTARG}"
+        cat "$_FILE" | grep "@${OPTARG}"
         exit 0
         ;;
     s)  # show revent records
@@ -47,8 +47,8 @@ while getopts "g:tsdh" opt; do
         ;;
     d)  # delete previous record
         _TMP_FILE="$(mktemp)"
-        head --lines=-1 "$_RECORD_FILE" > "$_TMP_FILE"
-        cp "$_TMP_FILE" "$_RECORD_FILE"
+        head --lines=-1 "$_FILE" > "$_TMP_FILE"
+        cp "$_TMP_FILE" "$_FILE"
         rm "$_TMP_FILE"
         exit 0
         ;;
@@ -59,7 +59,7 @@ while getopts "g:tsdh" opt; do
     esac
 done
 
-echo "$_RECORD_DATE: $_RECORD_DESC" >> "$_RECORD_FILE"
+echo "$_DATE: $_DESC" >> "$_FILE"
 
 
 
