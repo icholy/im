@@ -14,7 +14,7 @@ Add the following
 */5 * * * * /usr/local/bin/im -ping
 ```
 
-## Submit a tas
+## Submit a task
 
 ``` sh
 $ im doing some @stuff
