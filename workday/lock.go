@@ -41,6 +41,8 @@ func createLock(fpath string) (lockfile.Lockfile, error) {
 	return lockfile.New(fpath)
 }
 
+// LockDataDir aquires a lock on the DataDir
+// It try for 1 second before giving up.
 func LockDataDir() error {
 	var (
 		err   error
@@ -53,6 +55,7 @@ func LockDataDir() error {
 	return tryLockFor(lfile, time.Second)
 }
 
+// UnlockDataDir releases the lock on the DataDir
 func UnlockDataDir() error {
 	return lfile.Unlock()
 }

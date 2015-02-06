@@ -31,21 +31,21 @@ func main() {
 	}
 	defer workday.UnlockDataDir()
 
+	// update the Day
 	if isPing {
-		// update the Day
 		if err := workday.Ping(); err != nil {
 			log.Fatal(err)
 		}
 		return
 	}
 
-	// add task
 	args := flag.Args()
 	if len(args) == 0 {
 		flag.Usage()
 		return
 	}
 
+	// add task
 	desc := strings.Join(args, " ")
 	if err := workday.AddTask(desc); err != nil {
 		log.Fatal(err)
