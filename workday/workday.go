@@ -10,22 +10,14 @@ import (
 
 var DataDir = "data"
 
-func Ping() error {
-	t := time.Now()
-	d, err := LoadDay(t)
-	if err != nil {
-		return err
-	}
-	d.End = t
-	return d.Save()
-}
-
 type Day struct {
 	Start time.Time
 	End   time.Time
 	Tasks []*Task
 }
 
+// Save writes the Day to the data directory as json
+// and creates any required parent directories
 func (d *Day) Save() error {
 	d.MustBeSane()
 	fpath := pathForTime(d.Start)
@@ -43,6 +35,8 @@ func (d *Day) Save() error {
 	return nil
 }
 
+// LoadDay reads the Day corresponding to the supplied time.
+// If one is not found, a new one is created.
 func LoadDay(t time.Time) (*Day, error) {
 	fpath := pathForTime(t)
 	if exists, err := fileExists(fpath); err != nil {
@@ -53,6 +47,19 @@ func LoadDay(t time.Time) (*Day, error) {
 	return &Day{t, t, make([]*Task, 0)}, nil
 }
 
+// Ping updates the current Day's End time.
+// A Day is created if it does not already exist.
+func Ping() error {
+	t := time.Now()
+	d, err := LoadDay(t)
+	if err != nil {
+		return err
+	}
+	d.End = t
+	return d.Save()
+}
+
+// MustBeSane panics if there are Day's data is inconsistent
 func (d *Day) MustBeSane() {
 	sYear, sMonth, sDay := d.Start.Date()
 	eYear, eMonth, eDay := d.End.Date()
