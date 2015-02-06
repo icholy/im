@@ -103,18 +103,3 @@ func readFromFile(fpath string) (*Day, error) {
 	}
 	return d, nil
 }
-
-func createParentDirs(fpath string) error {
-	parent := filepath.Dir(fpath)
-	return os.MkdirAll(parent, 0777)
-}
-
-func fileExists(fpath string) (bool, error) {
-	if _, err := os.Stat(fpath); err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		return false, err
-	}
-	return true, nil
-}
