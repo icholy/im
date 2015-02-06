@@ -2,7 +2,24 @@
 
 > An tool for keeping track of what I'm doing
 
-## Stop Gap
+## Ping
 
-I need to start using something right now so I wrote a shell script that writes records to a log file.
-This will let me test out different interface ideas before writing the real thing.
+``` sh
+$ crontab -e
+```
+
+Add the following
+
+```
+*/5 * * * * /usr/local/bin/im -ping
+```
+
+## Submit a tas
+
+``` sh
+$ im doing some @stuff
+```
+
+
+
+
