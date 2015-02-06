@@ -29,15 +29,14 @@ func createLock(fpath string) (lockfile.Lockfile, error) {
 	// create the file if it doesn't exist
 	if exists, err := fileExists(fpath); err != nil {
 		return "", err
-	} else if exists {
-		return "", nil
-	}
-	f, err := os.Create(fpath)
-	if err != nil {
-		return "", err
-	}
-	if err := f.Close(); err != nil {
-		return "", err
+	} else if !exists {
+		f, err := os.Create(fpath)
+		if err != nil {
+			return "", err
+		}
+		if err := f.Close(); err != nil {
+			return "", err
+		}
 	}
 	return lockfile.New(fpath)
 }
