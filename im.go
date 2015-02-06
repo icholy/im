@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"./workday"
 )
@@ -25,18 +26,28 @@ func main() {
 
 	flag.Parse()
 
+	// global lock
+	if err := workday.LockDataDir(); err != nil {
+		log.Fatal(err)
+	}
+	defer workday.UnlockDataDir()
+
 	if isPing {
+		// update the Day
+		time.Sleep(time.Minute)
 		if err := workday.Ping(); err != nil {
 			log.Fatal(err)
 		}
 		return
 	}
 
+	// add task
 	args := flag.Args()
 	if len(args) == 0 {
 		flag.Usage()
 		return
 	}
+
 	desc := strings.Join(args, " ")
 	if err := workday.AddTask(desc); err != nil {
 		log.Fatal(err)
