@@ -3,19 +3,22 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"./workday"
 )
 
-var (
-	defaultRootDir = "data"
-	isPing         bool
-)
+var isPing bool
 
 func init() {
-	flag.BoolVar(&isPing, "ping", false, "notify that the workday is still active")
-	flag.StringVar(&workday.DataDir, "dir", defaultRootDir, "data directory")
+	flag.BoolVar(&isPing, "ping", false,
+		"notify that the workday is still active",
+	)
+	workday.DataDir = filepath.Join(
+		os.Getenv("HOME"), ".im",
+	)
 }
 
 func main() {
@@ -23,7 +26,6 @@ func main() {
 	flag.Parse()
 
 	args := flag.Args()
-
 	if len(args) == 0 {
 		flag.Usage()
 		return
