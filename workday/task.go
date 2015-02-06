@@ -31,5 +31,6 @@ func AddTask(desc string) error {
 		return err
 	}
 	d.Tasks = append(d.Tasks, t)
+	d.End = t.Time
 	return d.Save()
 }

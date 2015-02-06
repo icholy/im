@@ -19,6 +19,42 @@ type Day struct {
 	Tasks []*Task
 }
 
+func pathForTime(t time.Time) string {
+	year, month, day := t.Date()
+	return filepath.Join(
+		DataDir,
+		"tasks",
+		strconv.Itoa(year),
+		month.String(),
+		strconv.Itoa(day)+".json",
+	)
+}
+
+func readDayFromFile(fpath string) (*Day, error) {
+	f, err := os.Open(fpath)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	d := new(Day)
+	if err := json.NewDecoder(f).Decode(d); err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+// LoadDay reads the Day corresponding to the supplied time.
+// If one is not found, a new one is created.
+func LoadDay(t time.Time) (*Day, error) {
+	fpath := pathForTime(t)
+	if exists, err := fileExists(fpath); err != nil {
+		return nil, err
+	} else if exists {
+		return readDayFromFile(fpath)
+	}
+	return &Day{t, t, make([]*Task, 0)}, nil
+}
+
 // Save writes the Day to the data directory as json
 // and creates any required parent directories
 func (d *Day) Save() error {
@@ -36,18 +72,6 @@ func (d *Day) Save() error {
 		return err
 	}
 	return nil
-}
-
-// LoadDay reads the Day corresponding to the supplied time.
-// If one is not found, a new one is created.
-func LoadDay(t time.Time) (*Day, error) {
-	fpath := pathForTime(t)
-	if exists, err := fileExists(fpath); err != nil {
-		return nil, err
-	} else if exists {
-		return readFromFile(fpath)
-	}
-	return &Day{t, t, make([]*Task, 0)}, nil
 }
 
 // Ping updates the current Day's End time.
@@ -78,28 +102,4 @@ func (d *Day) MustBeSane() {
 	if d.End.Before(d.Start) {
 		panic("day ends before it starts")
 	}
-}
-
-func pathForTime(t time.Time) string {
-	year, month, day := t.Date()
-	return filepath.Join(
-		DataDir,
-		"tasks",
-		strconv.Itoa(year),
-		month.String(),
-		strconv.Itoa(day)+".json",
-	)
-}
-
-func readFromFile(fpath string) (*Day, error) {
-	f, err := os.Open(fpath)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	d := new(Day)
-	if err := json.NewDecoder(f).Decode(d); err != nil {
-		return nil, err
-	}
-	return d, nil
 }
