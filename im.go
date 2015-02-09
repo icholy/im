@@ -42,7 +42,11 @@ func getDescription() (string, error) {
 	}
 	defer f.Close()
 	defer os.Remove(f.Name())
-	cmd := exec.Command(os.Getenv("EDITOR"), f.Name())
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		return "", errors.New("EDITOR environtment variable not set")
+	}
+	cmd := exec.Command(editor, f.Name())
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
