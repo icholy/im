@@ -1,7 +1,9 @@
 package workday
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -102,4 +104,18 @@ func (d *Day) MustBeSane() {
 	if d.End.Before(d.Start) {
 		panic("day ends before it starts")
 	}
+}
+
+func (d *Day) String() string {
+	var buf bytes.Buffer
+
+	fmt.Fprintf(&buf, "Start: %s\n", d.Start)
+	fmt.Fprintf(&buf, "End: %s\n", d.End)
+	fmt.Fprintf(&buf, "Len: %s\n", d.End.Sub(d.Start))
+
+	for _, t := range d.Tasks {
+		fmt.Fprintf(&buf, "\t- %s\n", t.Desc)
+	}
+
+	return buf.String()
 }
