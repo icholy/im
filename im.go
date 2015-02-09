@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -21,33 +24,65 @@ func init() {
 	)
 }
 
-func main() {
-
-	flag.Parse()
-
-	// global lock
+func ping() error {
 	if err := workday.LockDataDir(); err != nil {
 		log.Fatal(err)
 	}
 	defer workday.UnlockDataDir()
+	return workday.Ping()
+}
 
-	// update the Day
+func getDescription() (string, error) {
+	if flag.NArg() > 0 {
+		return strings.Join(flag.Args(), " "), nil
+	}
+	f, err := ioutil.TempFile(os.TempDir(), "im.")
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	defer os.Remove(f.Name())
+	cmd := exec.Command(os.Getenv("EDITOR"), f.Name())
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+	data, err := ioutil.ReadFile(f.Name())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func addTask() error {
+	desc, err := getDescription()
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(desc) == "" {
+		return errors.New("description cannot be blank")
+	}
+	if err := workday.LockDataDir(); err != nil {
+		return err
+	}
+	defer workday.UnlockDataDir()
+	return workday.AddTask(desc)
+}
+
+func main() {
+
+	flag.Parse()
+
 	if isPing {
-		if err := workday.Ping(); err != nil {
+		if err := ping(); err != nil {
 			log.Fatal(err)
 		}
 		return
 	}
 
-	args := flag.Args()
-	if len(args) == 0 {
-		flag.Usage()
-		return
-	}
-
-	// add task
-	desc := strings.Join(args, " ")
-	if err := workday.AddTask(desc); err != nil {
+	if err := addTask(); err != nil {
 		log.Fatal(err)
 	}
 }
