@@ -64,7 +64,7 @@ func getDescription() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(data), nil
+	return strings.TrimSpace(string(data)), nil
 }
 
 func addTask() error {
@@ -72,7 +72,7 @@ func addTask() error {
 	if err != nil {
 		return err
 	}
-	if strings.TrimSpace(desc) == "" {
+	if desc == "" {
 		return errors.New("description cannot be blank")
 	}
 	if err := workday.LockDataDir(); err != nil {
