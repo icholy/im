@@ -29,10 +29,16 @@ func pathToYearMonth(p string) (int, time.Month, error) {
 	return year, time.Month(month), nil
 }
 
+func redirectToNow(w http.ResponseWriter, r *http.Request) {
+	now := time.Now()
+	nowPath := fmt.Sprintf("/%d/%d", now.Year(), now.Month())
+	http.Redirect(w, r, nowPath, http.StatusSeeOther)
+}
+
 func webHandler(w http.ResponseWriter, r *http.Request) {
 	year, month, err := pathToYearMonth(r.URL.Path)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		redirectToNow(w, r)
 		return
 	}
 	days, err := workday.DaysForMonth(year, month)
