@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -46,5 +47,6 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 
 func web() error {
 	http.HandleFunc("/", webHandler)
+	log.Println("Starting server on port 8080")
 	return http.ListenAndServe(":8080", nil)
 }

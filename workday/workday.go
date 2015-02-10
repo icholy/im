@@ -106,15 +106,19 @@ func (d *Day) MustBeSane() {
 	}
 }
 
+func roundDuration(d time.Duration) time.Duration {
+	return time.Duration(d.Seconds()) * time.Second
+}
+
 func (d *Day) String() string {
 	var buf bytes.Buffer
 
 	fmt.Fprintf(&buf,
-		"Date: %s\nTime: %s - %s\nLen: %s\n\n",
+		"Date: %s\nTime: %s - %s (%s)\n\n",
 		d.Start.Format("Jan _2 2006"),
 		d.Start.Format(time.Kitchen),
 		d.End.Format(time.Kitchen),
-		d.End.Sub(d.Start),
+		roundDuration(d.End.Sub(d.Start)),
 	)
 	for _, t := range d.Tasks {
 		fmt.Fprintf(&buf, "\t- %s\n", t.Desc)
