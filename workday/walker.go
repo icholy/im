@@ -1,58 +1,43 @@
 package workday
 
 import (
-	"sync"
+	"os"
+	"path/filepath"
+	"sort"
+	"strconv"
 	"time"
 )
 
-type Walker struct {
-	current time.Time
-	end     time.Time
-	out     chan *Day
-	err     error
-	m       sync.Mutex
-}
+type ByStartTime []*Day
 
-func NewWalker(start, end time.Time) *Walker {
-	w := &Walker{
-		current: start,
-		end:     end,
-		out:     make(chan *Day),
-	}
-	go func() {
-		w.m.Lock()
-		defer w.m.Unlock()
-		w.err = w.loop()
-	}()
-	return w
-}
+func (d ByStartTime) Len() int           { return len(d) }
+func (d ByStartTime) Swap(i, j int)      { d[i], d[j] = d[j], d[i] }
+func (d ByStartTime) Less(i, j int) bool { return d[i].Start.Before(d[j].Start) }
 
-func (w *Walker) loop() error {
-	defer close(w.out)
-	for w.current.Before(w.end) {
-		fpath := pathForTime(w.current)
-		exists, err := fileExists(fpath)
+func DaysForMonth(year int, month time.Month) ([]*Day, error) {
+	root := filepath.Join(
+		DataDir,
+		"tasks",
+		strconv.Itoa(year),
+		month.String(),
+	)
+	days := []*Day{}
+	if err := filepath.Walk(root, func(fpath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if exists {
-			day, err := readDayFromFile(fpath)
-			if err != nil {
-				return err
-			}
-			w.out <- day
+		if info.IsDir() {
+			return nil
 		}
-		w.current = w.current.Add(24 * time.Hour)
+		day, err := readDayFromFile(fpath)
+		if err != nil {
+			return err
+		}
+		days = append(days, day)
+		return nil
+	}); err != nil {
+		return nil, err
 	}
-	return nil
-}
-
-func (w *Walker) OutCh() chan *Day {
-	return w.out
-}
-
-func (w *Walker) Err() error {
-	w.m.Lock()
-	defer w.m.Unlock()
-	return w.err
+	sort.Sort(ByStartTime(days))
+	return days, nil
 }

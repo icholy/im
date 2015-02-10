@@ -3,32 +3,26 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"./workday"
-	"github.com/jinzhu/now"
 )
 
 var (
-	isPing    bool
-	queryDate string
+	isPing bool
+	isWeb  bool
 )
 
 func init() {
-	flag.BoolVar(&isPing, "ping", false,
-		"notify that the workday is still active",
-	)
-	flag.StringVar(&queryDate, "query", "", "query date")
-	workday.DataDir = filepath.Join(
-		os.Getenv("HOME"), ".im",
-	)
+	flag.BoolVar(&isPing, "ping", false, "update workday extent")
+	flag.BoolVar(&isWeb, "web", false, "start web server")
+
+	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
 }
 
 func ping() error {
@@ -82,15 +76,10 @@ func addTask() error {
 	return workday.AddTask(desc)
 }
 
-func query(t time.Time) error {
-	w := workday.NewWalker(
-		now.New(t).BeginningOfMonth(),
-		now.New(t).EndOfMonth(),
-	)
-	for d := range w.OutCh() {
-		fmt.Println(d.String())
+func handleErr(err error) {
+	if err != nil {
+		log.Fatal(err)
 	}
-	return w.Err()
 }
 
 func main() {
@@ -98,24 +87,14 @@ func main() {
 	flag.Parse()
 
 	if isPing {
-		if err := ping(); err != nil {
-			log.Fatal(err)
-		}
+		handleErr(ping())
 		return
 	}
 
-	if queryDate != "" {
-		t, err := now.Parse(queryDate)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if err := query(t); err != nil {
-			log.Fatal(err)
-		}
+	if isWeb {
+		handleErr(web())
 		return
 	}
 
-	if err := addTask(); err != nil {
-		log.Fatal(err)
-	}
+	handleErr(addTask())
 }
