@@ -34,15 +34,18 @@ func ping() error {
 }
 
 func getDescription() (string, error) {
+	// use args as message if there are any
 	if flag.NArg() > 0 {
 		return strings.Join(flag.Args(), " "), nil
 	}
+	// create temp file
 	f, err := ioutil.TempFile(os.TempDir(), "im.")
 	if err != nil {
 		return "", err
 	}
 	defer f.Close()
 	defer os.Remove(f.Name())
+	// open file in editor
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
 		return "", errors.New("EDITOR environment variable not set")
@@ -54,6 +57,7 @@ func getDescription() (string, error) {
 	if err := cmd.Run(); err != nil {
 		return "", err
 	}
+	// read file contents
 	data, err := ioutil.ReadFile(f.Name())
 	if err != nil {
 		return "", err
