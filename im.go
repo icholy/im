@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"./workday"
+	"github.com/icholy/im/workday"
 )
 
 var (

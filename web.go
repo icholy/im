@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"./workday"
+	"github.com/icholy/im/workday"
 )
 
 func pathToYearMonth(p string) (int, time.Month, error) {
