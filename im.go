@@ -108,7 +108,7 @@ func test() error {
 		return err
 	}
 	if len(day.Tasks) == 0 {
-		os.Exit(1)
+		fmt.Println("You don't have any tasks recorded for the day")
 	}
 	return nil
 }
