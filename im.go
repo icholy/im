@@ -3,24 +3,28 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/icholy/im/workday"
 )
 
 var (
-	isPing bool
-	isWeb  bool
+	isPing  bool
+	isWeb   bool
+	isToday bool
 )
 
 func init() {
 	flag.BoolVar(&isPing, "ping", false, "update workday extent")
 	flag.BoolVar(&isWeb, "web", false, "start web server")
+	flag.BoolVar(&isToday, "today", false, "show tasks from today")
 
 	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
 }
@@ -31,6 +35,19 @@ func ping() error {
 	}
 	defer workday.UnlockDataDir()
 	return workday.Ping()
+}
+
+func today() error {
+	if err := workday.LockDataDir(); err != nil {
+		log.Fatal(err)
+	}
+	defer workday.UnlockDataDir()
+	day, err := workday.LoadDay(time.Now())
+	if err != nil {
+		return err
+	}
+	fmt.Println(day.String())
+	return nil
 }
 
 func getDescription() (string, error) {
@@ -92,6 +109,11 @@ func main() {
 
 	if isPing {
 		handleErr(ping())
+		return
+	}
+
+	if isToday {
+		handleErr(today())
 		return
 	}
 
