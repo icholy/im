@@ -19,12 +19,16 @@ var (
 	isPing  bool
 	isWeb   bool
 	isToday bool
+	isMonth bool
+	isTest  bool
 )
 
 func init() {
 	flag.BoolVar(&isPing, "ping", false, "update workday extent")
 	flag.BoolVar(&isWeb, "web", false, "start web server")
 	flag.BoolVar(&isToday, "today", false, "show tasks from today")
+	flag.BoolVar(&isMonth, "month", false, "show tasks from month")
+	flag.BoolVar(&isTest, "test", false, "exit with 0 if there are tasks")
 
 	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
 }
@@ -47,6 +51,22 @@ func today() error {
 		return err
 	}
 	fmt.Println(day.String())
+	return nil
+}
+
+func month() error {
+	if err := workday.LockDataDir(); err != nil {
+		return err
+	}
+	defer workday.UnlockDataDir()
+	now := time.Now()
+	days, err := workday.DaysForMonth(now.Year(), now.Month())
+	if err != nil {
+		return err
+	}
+	for _, d := range days {
+		fmt.Println(d.String())
+	}
 	return nil
 }
 
@@ -82,6 +102,17 @@ func getDescription() (string, error) {
 	return strings.TrimSpace(string(data)), nil
 }
 
+func test() error {
+	day, err := workday.LoadDay(time.Now())
+	if err != nil {
+		return err
+	}
+	if len(day.Tasks) == 0 {
+		os.Exit(1)
+	}
+	return nil
+}
+
 func addTask() error {
 	desc, err := getDescription()
 	if err != nil {
@@ -114,6 +145,16 @@ func main() {
 
 	if isToday {
 		handleErr(today())
+		return
+	}
+
+	if isMonth {
+		handleErr(month())
+		return
+	}
+
+	if isTest {
+		handleErr(test())
 		return
 	}
 
