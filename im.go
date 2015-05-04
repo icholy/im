@@ -20,7 +20,7 @@ var (
 	isWeb   bool
 	isToday bool
 	isMonth bool
-	isTest  bool
+	isTest  time.Duration
 )
 
 func init() {
@@ -28,7 +28,7 @@ func init() {
 	flag.BoolVar(&isWeb, "web", false, "start web server")
 	flag.BoolVar(&isToday, "today", false, "show tasks from today")
 	flag.BoolVar(&isMonth, "month", false, "show tasks from month")
-	flag.BoolVar(&isTest, "test", false, "exit with 0 if there are tasks")
+	flag.DurationVar(&isTest, "test", 0, "exit with 0 if there are tasks")
 
 	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
 }
@@ -103,12 +103,23 @@ func getDescription() (string, error) {
 }
 
 func test() error {
-	day, err := workday.LoadDay(time.Now())
+	now := time.Now()
+	day, err := workday.LoadDay(now)
 	if err != nil {
 		return err
 	}
 	if len(day.Tasks) == 0 {
 		fmt.Println("You don't have any tasks recorded for the day")
+	}
+	var (
+		latest  = day.Tasks[len(day.Tasks)-1]
+		idleFor = now.Sub(latest.Time)
+	)
+	if idleFor > isTest {
+		fmt.Printf(
+			"You haven't recorded any tasks for %s\n",
+			time.Duration(idleFor.Seconds())*time.Second, // rounded
+		)
 	}
 	return nil
 }
@@ -153,7 +164,7 @@ func main() {
 		return
 	}
 
-	if isTest {
+	if isTest != 0 {
 		handleErr(test())
 		return
 	}
