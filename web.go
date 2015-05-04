@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"regexp"
@@ -35,6 +36,33 @@ func redirectToNow(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, nowPath, http.StatusSeeOther)
 }
 
+var daysHtmlTemplate = `
+	<html>
+		<head>
+			<style>
+				table {
+					width: 100%;
+					border: 1px solid black;
+				}
+			</style>
+		</head>
+		<table>
+			<tr>
+				<th>time</th>
+				<th>description</th>
+			<tr>
+			{{range .}}
+				{{range .Tasks}}
+					<tr>
+						<td>{{.Time}}
+						<td>{{.Desc}}
+					</tr>
+				{{end}}
+			{{end}}
+		</table>
+	</html>
+`
+
 func webHandler(w http.ResponseWriter, r *http.Request) {
 	year, month, err := pathToYearMonth(r.URL.Path)
 	if err != nil {
@@ -46,8 +74,14 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	for _, d := range days {
-		fmt.Fprintln(w, d.String())
+	tmpl, err := template.New("").Parse(daysHtmlTemplate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.Execute(w, days); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
