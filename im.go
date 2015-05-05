@@ -110,6 +110,7 @@ func test() error {
 	}
 	if len(day.Tasks) == 0 {
 		fmt.Println("You don't have any tasks recorded for the day")
+		return nil
 	}
 	var (
 		latest  = day.Tasks[len(day.Tasks)-1]
