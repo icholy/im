@@ -31,6 +31,8 @@ func init() {
 	flag.DurationVar(&isTest, "test", 0, "exit with 0 if there are tasks")
 
 	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
+
+	flag.Parse()
 }
 
 func ping() error {
@@ -147,33 +149,18 @@ func handleErr(err error) {
 }
 
 func main() {
-
-	flag.Parse()
-
-	if isPing {
+	switch {
+	case isPing:
 		handleErr(ping())
-		return
-	}
-
-	if isToday {
+	case isToday:
 		handleErr(today())
-		return
-	}
-
-	if isMonth {
+	case isMonth:
 		handleErr(month())
-		return
-	}
-
-	if isTest != 0 {
+	case isTest != 0:
 		handleErr(test())
-		return
-	}
-
-	if isWeb {
+	case isWeb:
 		handleErr(web())
-		return
+	default:
+		handleErr(addTask())
 	}
-
-	handleErr(addTask())
 }
