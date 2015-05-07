@@ -20,6 +20,7 @@ var (
 	isWeb   bool
 	isToday bool
 	isMonth bool
+	isUndo  bool
 	isTest  time.Duration
 )
 
@@ -28,6 +29,7 @@ func init() {
 	flag.BoolVar(&isWeb, "web", false, "start web server")
 	flag.BoolVar(&isToday, "today", false, "show tasks from today")
 	flag.BoolVar(&isMonth, "month", false, "show tasks from month")
+	flag.BoolVar(&isUndo, "undo", false, "undo last task for today")
 	flag.DurationVar(&isTest, "test", 0, "exit with 0 if there are tasks")
 
 	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
@@ -127,6 +129,10 @@ func test() error {
 	return nil
 }
 
+func undo() error {
+	return workday.Undo()
+}
+
 func addTask() error {
 	desc, err := getDescription()
 	if err != nil {
@@ -158,6 +164,8 @@ func main() {
 		handleErr(month())
 	case isTest != 0:
 		handleErr(test())
+	case isUndo:
+		handleErr(undo())
 	case isWeb:
 		handleErr(web())
 	default:
