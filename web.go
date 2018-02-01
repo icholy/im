@@ -38,7 +38,7 @@ func redirectToNow(w http.ResponseWriter, r *http.Request) {
 
 var funcMap = template.FuncMap{
 	"fmtTask": func(t *workday.Task) string {
-		return fmt.Sprintf("%s - %s", t.Time.Format(time.Kitchen), t.Desc)
+		return t.Desc
 	},
 	"fmtDay": func(d *workday.Day) string {
 		layout := "Mon Jan 2 2006"
