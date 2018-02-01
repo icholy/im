@@ -36,6 +36,16 @@ func redirectToNow(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, nowPath, http.StatusSeeOther)
 }
 
+var funcMap = template.FuncMap{
+	"fmtTask": func(t *workday.Task) string {
+		return fmt.Sprintf("%s - %s", t.Time.Format(time.Kitchen), t.Desc)
+	},
+	"fmtDay": func(d *workday.Day) string {
+		layout := "Mon Jan 2 2006"
+		return fmt.Sprintf("%s - (%s)", d.Start.Format(layout), d.End.Sub(d.Start))
+	},
+}
+
 var daysHtmlTemplate = `
 	<html>
 		<head>
@@ -46,20 +56,14 @@ var daysHtmlTemplate = `
 				}
 			</style>
 		</head>
-		<table>
-			<tr>
-				<th>time</th>
-				<th>description</th>
-			<tr>
-			{{range .}}
-				{{range .Tasks}}
-					<tr>
-						<td>{{.Time}}
-						<td>{{.Desc}}
-					</tr>
-				{{end}}
+		{{range .}}
+			<h2>{{fmtDay .}}</h2>
+			<ul>
+			{{range .Tasks}}
+				<li>{{fmtTask .}}</li>
 			{{end}}
-		</table>
+			</ul>
+		{{end}}
 	</html>
 `
 
@@ -74,7 +78,7 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.New("").Parse(daysHtmlTemplate)
+	tmpl, err := template.New("").Funcs(funcMap).Parse(daysHtmlTemplate)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
