@@ -85,8 +85,8 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func web() error {
+func web(addr string) error {
 	http.HandleFunc("/", webHandler)
-	log.Println("Starting server on port 8080")
-	return http.ListenAndServe(":8080", nil)
+	log.Printf("Starting server on: %s\n", addr)
+	return http.ListenAndServe(addr, nil)
 }
