@@ -121,7 +121,7 @@ func (d *Day) String() string {
 		roundDuration(d.End.Sub(d.Start)),
 	)
 	for _, t := range d.Tasks {
-		fmt.Fprintf(&buf, "\t- %s\n", t.Desc)
+		fmt.Fprintf(&buf, "%s\n", t.Desc)
 	}
 
 	return buf.String()
