@@ -12,17 +12,20 @@ import (
 	"strings"
 	"time"
 
+	"github.com/icholy/im/jira"
 	"github.com/icholy/im/workday"
 )
 
 var (
-	isPing  bool
-	isWeb   bool
-	isToday bool
-	isMonth bool
-	isUndo  bool
-	isTest  time.Duration
-	webAddr string
+	isPing   bool
+	isWeb    bool
+	isToday  bool
+	isMonth  bool
+	isUndo   bool
+	isTest   time.Duration
+	webAddr  string
+	jiraUser string
+	jiraPass string
 )
 
 func init() {
@@ -33,6 +36,8 @@ func init() {
 	flag.BoolVar(&isUndo, "undo", false, "undo last task for today")
 	flag.DurationVar(&isTest, "test", 0, "exit with 0 if there are tasks")
 	flag.StringVar(&webAddr, "web.addr", ":8081", "web address to listen on")
+	flag.StringVar(&jiraUser, "jira.username", "icholy", "jira username")
+	flag.StringVar(&jiraPass, "jira.password", "", "jira password")
 
 	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
 
@@ -44,7 +49,19 @@ func ping() error {
 		log.Fatal(err)
 	}
 	defer workday.UnlockDataDir()
-	return workday.Ping()
+	defer workday.Ping()
+
+	issues, err := jira.InProgress(jiraUser, jiraPass)
+	if err != nil {
+		return err
+	}
+	for _, issue := range issues {
+		desc := fmt.Sprintf("%s: %s", issue.Name, issue.Summary)
+		if err := workday.AddTask(desc); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func today() error {

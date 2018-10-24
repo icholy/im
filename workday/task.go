@@ -19,6 +19,11 @@ func AddTask(desc string) error {
 	if err != nil {
 		return err
 	}
+	for _, tt := range d.Tasks {
+		if tt.Desc == desc {
+			return nil
+		}
+	}
 	d.Tasks = append(d.Tasks, t)
 	d.End = t.Time
 	return d.Save()
