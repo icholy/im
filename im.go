@@ -57,6 +57,9 @@ func ping() error {
 	defer workday.UnlockDataDir()
 	defer workday.Ping()
 
+	if jiraUser == "" && jiraPass == "" {
+		return nil
+	}
 	issues, err := jira.InProgress(jiraUser, jiraPass, timeout)
 	if err != nil {
 		return err
