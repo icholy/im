@@ -41,7 +41,11 @@ func init() {
 	flag.StringVar(&jiraUser, "jira.username", "icholy", "jira username")
 	flag.StringVar(&jiraPass, "jira.password", "", "jira password")
 
-	workday.DataDir = filepath.Join(os.Getenv("HOME"), ".im")
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	workday.DataDir = filepath.Join(home, ".im")
 
 	flag.Parse()
 }
