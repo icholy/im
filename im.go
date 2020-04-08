@@ -26,10 +26,12 @@ var (
 	webAddr  string
 	jiraUser string
 	jiraPass string
+	timeout  time.Duration
 )
 
 func init() {
 	flag.BoolVar(&isPing, "ping", false, "update workday extent")
+	flag.DurationVar(&timeout, "ping.timeout", 10*time.Second, "ping timeout")
 	flag.BoolVar(&isWeb, "web", false, "start web server")
 	flag.BoolVar(&isToday, "today", false, "show tasks from today")
 	flag.BoolVar(&isMonth, "month", false, "show tasks from month")
@@ -51,7 +53,7 @@ func ping() error {
 	defer workday.UnlockDataDir()
 	defer workday.Ping()
 
-	issues, err := jira.InProgress(jiraUser, jiraPass)
+	issues, err := jira.InProgress(jiraUser, jiraPass, timeout)
 	if err != nil {
 		return err
 	}

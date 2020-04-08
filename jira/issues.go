@@ -3,6 +3,7 @@ package jira
 import (
 	"crypto/tls"
 	"net/http"
+	"time"
 
 	"github.com/andygrunwald/go-jira"
 )
@@ -14,17 +15,20 @@ type Issue struct {
 	Summary string
 }
 
-func InProgress(username, password string) ([]Issue, error) {
+func InProgress(username, password string, timeout time.Duration) ([]Issue, error) {
 
-	tp := jira.BasicAuthTransport{
-		Username: username,
-		Password: password,
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	hc := &http.Client{
+		Timeout: timeout,
+		Transport: &jira.BasicAuthTransport{
+			Username: username,
+			Password: password,
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
 		},
 	}
 
-	client, err := jira.NewClient(tp.Client(), BaseURL)
+	client, err := jira.NewClient(hc, BaseURL)
 	if err != nil {
 		return nil, err
 	}
