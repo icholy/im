@@ -103,7 +103,6 @@ func Ping() error {
 func WeekTotals(days []*Day) []time.Duration {
 	m := map[int]time.Duration{}
 	for _, d := range days {
-		fmt.Println("week", d.Start, d.Week())
 		m[d.Week()] += d.Duration()
 	}
 	weeks := make([]time.Duration, 5)
