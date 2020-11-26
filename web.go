@@ -48,16 +48,15 @@ var funcMap = template.FuncMap{
 
 var daysHtmlTemplate = `
 	<html>
-		<head>
-			<style>
-				table {
-					width: 100%;
-					border: 1px solid black;
-				}
-			</style>
-		</head>
-		{{range .}}
-			<h2>{{fmtDay .}}</h2>
+		<h2>Weeks</h2>
+		<ol>
+		{{range .Weeks}}
+			<li>{{.}}</li>
+		{{end}}
+		</ol>
+		<h2>Days</h2>
+		{{range .Days}}
+			<h3>{{fmtDay .}}</h3>
 			<ul>
 			{{range .Tasks}}
 				<li>{{fmtTask .}}</li>
@@ -83,7 +82,13 @@ func webHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if err := tmpl.Execute(w, days); err != nil {
+	if err := tmpl.Execute(w, struct {
+		Weeks []time.Duration
+		Days  []*workday.Day
+	}{
+		Days:  days,
+		Weeks: workday.WeekTotals(days),
+	}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

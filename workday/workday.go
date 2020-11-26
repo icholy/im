@@ -21,6 +21,17 @@ type Day struct {
 	Tasks []*Task
 }
 
+func (d Day) Duration() time.Duration {
+	return d.End.Sub(d.Start)
+}
+
+func (d Day) Week() int {
+	beginningOfTheMonth := time.Date(d.Start.Year(), d.Start.Month(), 1, 1, 1, 1, 1, time.UTC)
+	_, thisWeek := d.Start.ISOWeek()
+	_, beginningWeek := beginningOfTheMonth.ISOWeek()
+	return thisWeek - beginningWeek
+}
+
 func pathForTime(t time.Time) string {
 	year, month, day := t.Date()
 	return filepath.Join(
@@ -86,6 +97,20 @@ func Ping() error {
 	}
 	d.End = t
 	return d.Save()
+}
+
+// WeekTotals groups total work time by week
+func WeekTotals(days []*Day) []time.Duration {
+	m := map[int]time.Duration{}
+	for _, d := range days {
+		fmt.Println("week", d.Start, d.Week())
+		m[d.Week()] += d.Duration()
+	}
+	weeks := make([]time.Duration, 5)
+	for i := range weeks {
+		weeks[i] = m[i]
+	}
+	return weeks
 }
 
 // MustBeSane panics if there are Day's data is inconsistent
