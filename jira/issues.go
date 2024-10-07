@@ -8,7 +8,7 @@ import (
 	"github.com/andygrunwald/go-jira"
 )
 
-var BaseURL = "https://jira.accipiterradar.com"
+var BaseURL = "https://teamideaworks.atlassian.net"
 
 type Issue struct {
 	Name    string

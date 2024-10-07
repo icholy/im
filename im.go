@@ -38,8 +38,9 @@ func init() {
 	flag.BoolVar(&isUndo, "undo", false, "undo last task for today")
 	flag.DurationVar(&isTest, "test", 0, "exit with 0 if there are tasks")
 	flag.StringVar(&webAddr, "web.addr", ":8081", "web address to listen on")
-	flag.StringVar(&jiraUser, "jira.username", "", "jira username")
-	flag.StringVar(&jiraPass, "jira.password", "", "jira password")
+	flag.StringVar(&jiraUser, "jira.username", os.Getenv("JIRA_USERNAME"), "jira username")
+	flag.StringVar(&jiraPass, "jira.password", os.Getenv("JIRA_API_TOKEN"), "jira password or token")
+	flag.StringVar(&jira.BaseURL, "jira.url", os.Getenv("JIRA_BASE_URL"), "jira base url")
 
 	home, err := os.UserHomeDir()
 	if err != nil {
